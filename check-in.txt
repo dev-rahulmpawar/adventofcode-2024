@@ -1,0 +1,7 @@
+
+git checkout master
+git pull
+git add .
+git commit -m "Day 1 Historian Hysteria"
+git push origin master --force
+
