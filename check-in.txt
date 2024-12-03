@@ -2,6 +2,14 @@
 git checkout master
 git pull
 git add .
-git commit -m "Day 1 Historian Hysteria"
+git commit -m "Day 2 Cube Conundrum"
 git push origin master --force
 
+chmod +x git_commit.sh
+source git_commit.sh
+
+To commit locally:
+git_commit "Your commit message"
+
+To commit and push:
+git_commit "XXX" push
