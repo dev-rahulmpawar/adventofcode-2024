@@ -1,5 +1,9 @@
-def listFuncs(path):
-    return [item for item in dir(path) if not item.startswith("__")]
+def listFuncs(path, display=None):
+    toPrint = True if display is None else display
+    funcs = [item for item in dir(path) if not item.startswith("__")]
+    if toPrint:
+        print(funcs)
+    return funcs
     
 def load_input_lines(file_path, start_at=None, count=None, lineCount=None):
     with open(file_path) as inp_file:
@@ -33,3 +37,5 @@ def printDict(dictData, maxCount=None):
         if count > printCount:
             print(".\n.\n.\n\n{} more.".format(len(dictData) - printCount))
             break
+            
+print([item for item in dir() if not item.startswith("__")])

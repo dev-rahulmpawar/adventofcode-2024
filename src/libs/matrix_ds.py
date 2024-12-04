@@ -1,26 +1,27 @@
+import six
+
 class Cell:
+    DIRECTIONS = {'L': (0,-1), 'LT': (-1,-1), 'T': (-1,0), 'RT': (-1,1), 'R': (0,1),
+                  'RB': (1,1), 'B': (1, 0), 'LB': (1, -1)}
     def __init__(self, data, rowIndx, colIndx, parent):
         self.data = data
         self.rowIndx = rowIndx
         self.colIndx = colIndx
         self.parent = parent
-        self.neighbors = []
+        self.neighbors = {}
         self.obj = None
         self.visited = False
         
     def fetchNeighbors(self, matchingFn=None):
-        for rIndx in range(-1, 2):
-            for cIndx in range(-1, 2):
-                if rIndx == 0 and cIndx == 0:
-                    continue
+        self.neighbors = {}
+        for cellDir, (rIndx, cIndx) in six.iteritems(self.DIRECTIONS):
+            cell = self.parent.cellAt(self.rowIndx + rIndx, self.colIndx + cIndx)
+            if cell:
+                if matchingFn:
+                    if matchingFn(cell):
+                        self.neighbors[cellDir] = cell
                 else:
-                    cell = self.parent.cellAt(self.rowIndx + rIndx, self.colIndx + cIndx)
-                    if cell:
-                        if matchingFn:
-                            if matchingFn(cell):
-                                self.neighbors.append(cell)
-                        else:
-                            self.neighbors.append(cell)
+                    self.neighbors[cellDir] = cell
                             
     def store(self, data, storeFn=None):
         if storeFn:
@@ -28,8 +29,12 @@ class Cell:
         else:
             self.obj = data
 
+    def printData(self):
+        return self.data
+
 class Matrix:
     NULL = object()
+    CELL_TYPE = Cell
     
     def __init__(self, data):
         self.rows,self.cols = len(data), len(data[0])
@@ -39,7 +44,7 @@ class Matrix:
     def load(self, data):        
         for rIndx in range(self.rows):
             for cIndx in range(self.cols):
-                self.data[(rIndx * self.cols) + cIndx] = Cell(data[rIndx][cIndx], rIndx, cIndx, self)
+                self.data[(rIndx * self.cols) + cIndx] = self.CELL_TYPE(data[rIndx][cIndx], rIndx, cIndx, self)
 
     def resetVisit(self):
         for cell in self.data:
@@ -75,8 +80,27 @@ class Matrix:
                 if printFn:
                     print(printFn(self.data[(rIndx * self.cols) + cIndx]), end=' ')
                 else:
-                    print(self.data[(rIndx * self.cols) + cIndx].data, end=' ') 
+                    print(self.data[(rIndx * self.cols) + cIndx].printData(), end=' ') 
             if firstNRows and rIndx > (firstNRows - 2) and (self.rows - firstNRows):
                 print(".\n.\n.\n{} rows more.".format(self.rows - firstNRows), end=' ')
                 break  
             print("\n")
+            
+class IndexedCell(Cell):
+    INDEX_COUNT = 0
+    
+    def __init__(self, *args, **kwargs):
+        super(IndexedCell, self).__init__(*args, **kwargs)
+        self.index = IndexedCell.INDEX_COUNT
+        IndexedCell.INDEX_COUNT += 1
+            
+    def printData(self):
+        return (self.index, self.data)
+        
+class IndexedMatrix(Matrix):
+    CELL_TYPE = IndexedCell
+    def __init__(self, *args, **kwargs):
+        IndexedCell.INDEX_COUNT = 0
+        super(IndexedMatrix, self).__init__(*args, **kwargs)
+        
+print([item for item in dir() if not item.startswith("__")])
