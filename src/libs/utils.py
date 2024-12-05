@@ -5,13 +5,17 @@ def listFuncs(path, display=None):
         print(funcs)
     return funcs
     
-def load_input_lines(file_path, start_at=None, count=None, lineCount=None):
+def load_input_lines(file_path, start_at=None, count=None, lineCount=None, label=None):
     with open(file_path) as inp_file:
         data = inp_file.read().splitlines()
         startAt = start_at or 0
         countN = count or 10
         lineMax = lineCount or 120
         count = 0
+
+        if label:
+            dash = "=" * 50
+            print(f"\n{dash}\nInput Data : {label}\n{dash}\n")
         for index, item in enumerate(data):
             if index >= startAt:
                 count = count + 1
@@ -23,10 +27,31 @@ def load_input_lines(file_path, start_at=None, count=None, lineCount=None):
                 print(".\n.\n.\n\n{} rows more.".format(len(data) - countN))
                 break
         return data
-
-def printSingleNumList(listData, maxCount=None):
+        
+def printItem(data, label=None):
+    if label:
+        dash = "=" * 50
+        print(f"\n{dash}\n{label} \n{dash}\n")
+    print(data)
+        
+def printSingleItemList(listData, maxCount=None, label=None):
     printCount = maxCount or 50
-    print(listData[:printCount], "... {} more.".format(len(listData) - printCount))
+    if label:
+        dash = "=" * 50
+        print(f"\n{dash}\n{label} \n{dash}\n")
+    remaining = len(listData) - printCount
+    print(listData[:printCount], f"... {remaining} more." if remaining > 0 else "")
+    
+def printMultiItemList(listData, maxCount=None, label=None):
+    printCount = maxCount or 50
+    if label:
+        dash = "=" * 50
+        print(f"\n{dash}\n{label} \n{dash}\n")
+    for index, item in enumerate(listData):
+        print(item)
+        if index > (printCount - 1):
+            print(".\n.\n.\n\n{} more items.".format(len(listData) - printCount))
+            break
     
 def printDict(dictData, maxCount=None):
     printCount = maxCount or 10
